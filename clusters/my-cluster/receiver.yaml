@@ -1,0 +1,28 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta1
+kind: Receiver
+metadata:
+  name: gitlab-receiver
+  namespace: flux-system
+spec:
+  type: gitlab
+  events:
+    - "Push Hook"
+#    - "Tag Push Hook"
+  secretRef:
+    name: gitlab-webhook-token
+  resources:
+    - kind: GitRepository
+      name: flux-system
+    - kind: GitRepository
+      name: k8s-repo
+#    - kind: GitRepository
+#      name: main-k8s-repo
+---
+apiVersion: v1
+data:
+  token: MzM4ODlkNjRmYzNmMjY4MDJkNTQ4YmY2OGJhNTc5Y2I5OWVlM2NkYw==    # 33889d64fc3f26802d548bf68ba579cb99ee3cdc
+kind: Secret
+metadata:
+  name: webhook-token
+  namespace: flux-system
+type: Opaque

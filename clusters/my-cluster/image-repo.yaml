@@ -1,0 +1,39 @@
+#kubectl -n flux-system create secret docker-registry harbor-registry \
+#--docker-server=harbor.fc277073030.com \
+#--docker-username=admin \
+#--docker-password=Harbor12345 \
+#--docker-email=666@qq.com
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: harbor-registry
+  namespace: flux-system
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJoYXJib3IuZmMyNzcwNzMwMzAuY29tIjp7InVzZXJuYW1lIjoiYWRtaW4iLCJwYXNzd29yZCI6IkhhcmJvcjEyMzQ1IiwiZW1haWwiOiIyNzcwNzMwMzBAcXEuY29tIiwiYXV0aCI6IllXUnRhVzQ2U0dGeVltOXlNVEl6TkRVPSJ9fX0=
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageRepository
+metadata:
+  name: flask-demo-image-repo
+  namespace: flux-system
+spec:
+  image: harbor.fc277073030.com/devops/flask-demo
+  interval: 1m0s
+  secretRef:
+    name: harbor-registry
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta1
+kind: Receiver
+metadata:
+  name: harbor-receiver
+  namespace: flux-system
+spec:
+  type: harbor
+  secretRef:
+    name: harbor-webhook-token
+  resources:
+    - apiVersion: image.toolkit.fluxcd.io/v1alpha1
+      kind: ImageRepository
+      name: flask-demo-image-repo

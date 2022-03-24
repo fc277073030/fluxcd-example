@@ -1,0 +1,26 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: k8s-repo
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  ref:
+    branch: main
+  secretRef:
+    name: flux-system
+  url: https://mygitlab.fc277073030.com/devops/k8s-repo.git
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: k8s-repo
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  path: ./apps
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: k8s-repo
